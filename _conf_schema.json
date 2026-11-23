@@ -1,23 +1,27 @@
 {
   "items_json": {
-    "description": "物品清单（JSON 数组）。name=名字，max=满量，daily=每天消耗（满量的百分比），var=随机波动 0~1。改完重启生效。",
+    "description": "物品清单（JSON 数组）。name=名字 max=满量 daily=每天消耗(满量百分比) var=波动0~1 category=分类 price=单价 expire_days=保质期天数(可选)",
     "type": "text",
-    "default": "[{\"name\":\"米\",\"max\":100,\"daily\":4.0,\"var\":0.3},{\"name\":\"鸡蛋\",\"max\":100,\"daily\":6.0,\"var\":0.3},{\"name\":\"食用油\",\"max\":100,\"daily\":2.0,\"var\":0.3},{\"name\":\"盐\",\"max\":100,\"daily\":0.8,\"var\":0.3},{\"name\":\"酱油\",\"max\":100,\"daily\":1.5,\"var\":0.3},{\"name\":\"醋\",\"max\":100,\"daily\":1.0,\"var\":0.3},{\"name\":\"纸巾\",\"max\":100,\"daily\":5.0,\"var\":0.3},{\"name\":\"洗衣液\",\"max\":100,\"daily\":2.5,\"var\":0.3},{\"name\":\"牙膏\",\"max\":100,\"daily\":1.5,\"var\":0.3},{\"name\":\"洗发水\",\"max\":100,\"daily\":1.2,\"var\":0.3}]",
-    "hint": "日常约 4~6、耐用品 0.8~2.5 的手感：日用品一两周触发一次采购，调料一个月上下。"
+    "default": "[{\"name\":\"米\",\"max\":100,\"daily\":4.0,\"var\":0.3,\"category\":\"主食\",\"price\":3.5},{\"name\":\"鸡蛋\",\"max\":100,\"daily\":6.0,\"var\":0.3,\"category\":\"生鲜\",\"price\":1.2},{\"name\":\"食用油\",\"max\":100,\"daily\":2.0,\"var\":0.3,\"category\":\"调料\",\"price\":12.0},{\"name\":\"盐\",\"max\":100,\"daily\":0.8,\"var\":0.3,\"category\":\"调料\",\"price\":2.0},{\"name\":\"酱油\",\"max\":100,\"daily\":1.5,\"var\":0.3,\"category\":\"调料\",\"price\":8.0},{\"name\":\"醋\",\"max\":100,\"daily\":1.0,\"var\":0.3,\"category\":\"调料\",\"price\":6.0},{\"name\":\"纸巾\",\"max\":100,\"daily\":5.0,\"var\":0.3,\"category\":\"日用\",\"price\":4.0},{\"name\":\"洗衣液\",\"max\":100,\"daily\":2.5,\"var\":0.3,\"category\":\"日用\",\"price\":15.0},{\"name\":\"牙膏\",\"max\":100,\"daily\":1.5,\"var\":0.3,\"category\":\"日用\",\"price\":9.0},{\"name\":\"洗发水\",\"max\":100,\"daily\":1.2,\"var\":0.3,\"category\":\"日用\",\"price\":20.0}]",
+    "hint": "日用品 4~6（一两周触发一次采购）、调料 0.8~2.5（一个月上下）。price 用于周报花费统计。"
   },
   "low_threshold": {
     "description": "见底阈值（剩余 <= 这个百分比就挂采购任务）",
     "type": "int",
-    "default": 10,
-    "hint": "10 就是剩 10% 时开始惦记采购。"
+    "default": 10
   },
   "auto_propose": {
     "description": "见底时主动发采购邀约（走 target_umo）",
     "type": "bool",
     "default": true
   },
+  "llm_propose": {
+    "description": "用 LLM 按人设写邀约文案（关闭则用固定模板，省钱）",
+    "type": "bool",
+    "default": true
+  },
   "target_umo": {
-    "description": "主动邀约发往的会话。格式如 qqjiejie:FriendMessage:2498108903；留空 = 不单独发消息，只靠人格注入让她聊天时自然提",
+    "description": "主动邀约发往的会话。格式如 qqjiejie:FriendMessage:2498108903；留空 = 不单独发消息，只靠人格注入",
     "type": "text",
     "default": ""
   },

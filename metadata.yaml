@@ -2,6 +2,6 @@ name: astrbot_plugin_pantry
 display_name: 柴米油盐
 short_desc: 家里的柴米油盐，见底了会喊你一起去采购
 author: SCP-416
-version: 0.1.0
+version: 0.2.0
 desc: 记录家里常用的生活物品，每天按消耗率扣减；快见底时主动发起采购过家家剧情，采购完自动补货。物品状态会注入人格，让她心里有数。
 repo: https://github.com/SCP-416/astrbot_plugin_pantry
