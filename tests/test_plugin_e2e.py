@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 """端到端测试：假 AstrBot 事件驱动插件处理器（需 AstrBot 运行环境）。"""
 import asyncio
+import importlib.util
 import os
 import sys
 import tempfile
 import types
-import importlib.util
 
 sys.path.insert(0, r"D:\ASTRBOT\backend\app")
 ROOT = r"D:\PET\repos\astrbot_plugin_pantry"
