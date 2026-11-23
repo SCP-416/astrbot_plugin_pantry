@@ -189,10 +189,13 @@ class PantryPlugin(Star):
             if any(w in text for w in _FOOD_WORDS):
                 usage = {}
                 for name, amt in _FOOD_USAGE.items():
-                    if name in text:
+                    if name in text and name in st["items"]:
                         usage[name] = amt
                 if not usage:
-                    usage = {"鸡蛋": 6, "食用油": 4, "盐": 2}
+                    usage = {
+                        k: v for k, v in (("鸡蛋", 6), ("食用油", 4), ("盐", 2))
+                        if k in st["items"]
+                    }
                 apply_usage(st, usage)
                 consume_event(st, text, list(usage))
                 self._save_state(st)
