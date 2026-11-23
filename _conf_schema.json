@@ -1,0 +1,39 @@
+{
+  "items_json": {
+    "description": "物品清单（JSON 数组）。name=名字，max=满量，daily=每天消耗（满量的百分比），var=随机波动 0~1。改完重启生效。",
+    "type": "text",
+    "default": "[{\"name\":\"米\",\"max\":100,\"daily\":4.0,\"var\":0.3},{\"name\":\"鸡蛋\",\"max\":100,\"daily\":6.0,\"var\":0.3},{\"name\":\"食用油\",\"max\":100,\"daily\":2.0,\"var\":0.3},{\"name\":\"盐\",\"max\":100,\"daily\":0.8,\"var\":0.3},{\"name\":\"酱油\",\"max\":100,\"daily\":1.5,\"var\":0.3},{\"name\":\"醋\",\"max\":100,\"daily\":1.0,\"var\":0.3},{\"name\":\"纸巾\",\"max\":100,\"daily\":5.0,\"var\":0.3},{\"name\":\"洗衣液\",\"max\":100,\"daily\":2.5,\"var\":0.3},{\"name\":\"牙膏\",\"max\":100,\"daily\":1.5,\"var\":0.3},{\"name\":\"洗发水\",\"max\":100,\"daily\":1.2,\"var\":0.3}]",
+    "hint": "日常约 4~6、耐用品 0.8~2.5 的手感：日用品一两周触发一次采购，调料一个月上下。"
+  },
+  "low_threshold": {
+    "description": "见底阈值（剩余 <= 这个百分比就挂采购任务）",
+    "type": "int",
+    "default": 10,
+    "hint": "10 就是剩 10% 时开始惦记采购。"
+  },
+  "auto_propose": {
+    "description": "见底时主动发采购邀约（走 target_umo）",
+    "type": "bool",
+    "default": true
+  },
+  "target_umo": {
+    "description": "主动邀约发往的会话。格式如 qqjiejie:FriendMessage:2498108903；留空 = 不单独发消息，只靠人格注入让她聊天时自然提",
+    "type": "text",
+    "default": ""
+  },
+  "propose_cooldown_hours": {
+    "description": "主动邀约冷却（小时）",
+    "type": "float",
+    "default": 6.0
+  },
+  "procurement_words": {
+    "description": "采购开始关键词（逗号分隔，命中记一笔，等 done 词补货）",
+    "type": "text",
+    "default": "买菜,逛超市,囤货,采购,进货"
+  },
+  "done_words": {
+    "description": "采购完成关键词（逗号分隔，命中自动补货）",
+    "type": "text",
+    "default": "到家了,回家了,买好了,归置好了,不玩了,下次再"
+  }
+}
