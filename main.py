@@ -71,17 +71,38 @@ _DEFAULT_ITEMS = [
 ]
 
 
-@register("astrbot_plugin_pantry", "SCP-416", "柴米油盐", "0.2.0")
+@register("astrbot_plugin_pantry", "SCP-416", "柴米油盐", "0.3.0")
 class PantryPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context, config)
         self.data_dir = str(StarTools.get_data_dir("astrbot_plugin_pantry"))
         os.makedirs(self.data_dir, exist_ok=True)
         self._state_path = os.path.join(self.data_dir, "pantry_state.json")
+        self._items_path = os.path.join(self.data_dir, "pantry_items.json")
 
     # ---------- 配置 / 状态 ----------
     def _items(self):
+        """自定义物品（面板里增删改的）优先，其次配置里的 items_json，最后默认清单。"""
+        try:
+            if os.path.exists(self._items_path):
+                with open(self._items_path, encoding="utf-8") as f:
+                    custom = json.load(f)
+                if isinstance(custom, list):
+                    parsed = parse_items(custom)
+                    if parsed:
+                        return parsed
+        except Exception:
+            pass
         return parse_items(self.config.get("items_json", "")) or list(_DEFAULT_ITEMS)
+
+    def _save_items(self, items):
+        try:
+            tmp = self._items_path + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as f:
+                json.dump(items, f, ensure_ascii=False, indent=1)
+            os.replace(tmp, self._items_path)
+        except Exception as e:
+            logger.warning("[柴米油盐] 自定义物品保存失败: %s", e)
 
     def _threshold(self):
         try:
@@ -266,6 +287,15 @@ class PantryPlugin(Star):
             self.context.register_web_api(
                 _PAGE_PREFIX + "/index", self._web_index, ["GET"], "柴米油盐面板"
             )
+            self.context.register_web_api(
+                _PAGE_PREFIX + "/items", self._web_items, ["GET"], "柴米油盐自定义物品"
+            )
+            self.context.register_web_api(
+                _PAGE_PREFIX + "/item", self._web_item, ["POST"], "柴米油盐增删改物品"
+            )
+            self.context.register_web_api(
+                _PAGE_PREFIX + "/reset", self._web_reset, ["POST"], "柴米油盐重置库存"
+            )
         except Exception as e:
             logger.warning("[柴米油盐] WebUI 注册跳过: %s", e)
 
@@ -295,6 +325,53 @@ class PantryPlugin(Star):
                 self._save_state(st)
                 return {"ok": True, "name": name, "qty": st["items"][name]}
             return {"ok": False, "error": "unknown item"}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    async def _web_items(self):
+        return {"items": self._items(), "custom": os.path.exists(self._items_path)}
+
+    async def _web_item(self):
+        """增 / 改 / 删消耗品。POST {action: add|update|delete, item: {...}, old_name: ...}"""
+        try:
+            data = await request.get_json()
+            action = str(data.get("action") or "add")
+            items = list(self._items())  # 已经是 dict 列表
+            old_name = str(data.get("old_name") or "")
+            if action == "delete":
+                items = [x for x in items if x["name"] != old_name]
+            else:
+                raw = data.get("item") or {}
+                parsed = parse_items([raw])
+                if not parsed:
+                    return {"ok": False, "error": "字段不合法（需要 name / daily）"}
+                new = parsed[0]
+                if action == "update" and old_name:
+                    items = [new if x["name"] == old_name else x for x in items]
+                    if new["name"] != old_name:
+                        # 改名：把库存值迁过去
+                        st = self._load_state()
+                        if old_name in st["items"]:
+                            st["items"][new["name"]] = st["items"].pop(old_name)
+                            st["pending"] = [new["name"] if x == old_name else x for x in st["pending"]]
+                            self._save_state(st)
+                else:
+                    if any(x["name"] == new["name"] for x in items):
+                        return {"ok": False, "error": "物品名已存在"}
+                    items.append(new)
+                    st = self._load_state()
+                    st["items"][new["name"]] = float(new["max"])
+                    self._save_state(st)
+            self._save_items(items)
+            return {"ok": True, "items": items}
+        except Exception as e:
+            return {"ok": False, "error": str(e)}
+
+    async def _web_reset(self):
+        try:
+            st = new_state(self._items())
+            self._save_state(st)
+            return {"ok": True}
         except Exception as e:
             return {"ok": False, "error": str(e)}
 

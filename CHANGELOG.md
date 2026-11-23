@@ -1,5 +1,11 @@
 # 更新日志
 
+## 0.3.0
+
+- **插件面板**：在 AstrBot 控制台插件卡片上直接打开（`views/dashboard/index.html`），库存仪表盘 + 场景/清单/记录一页看全
+- **消耗品自定义**：面板里新增 / 编辑 / 删除消耗品（名字、满量、日耗%、波动、分类、单价），改名自动迁移库存；清单存 `pantry_items.json`，更新插件不丢
+- 面板一键重置库存；Web API 增加 `page/items`、`page/item`、`page/reset`
+
 ## 0.2.0
 
 - **修复**：`StarTools` / `MessageChain` 的导入路径（此前从市场安装会加载失败）
