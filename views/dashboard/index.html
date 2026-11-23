@@ -61,15 +61,22 @@ pre{background:var(--card);padding:12px;border-radius:10px;border:1px solid var(
 <h2>购物清单 / 场景</h2><pre id="scene"></pre>
 <h2>最近家里的事</h2><pre id="events"></pre>
 <script>
-const bridge = window.AstrBotPluginView || window.AstrBotPluginPage;
+async function getBridge(){
+  for(let i=0;i<60;i++){
+    const b = window.AstrBotPluginView || window.AstrBotPluginPage;
+    if(b){ if(typeof b.ready === 'function'){ try{ await b.ready(); }catch(e){} } return b; }
+    await new Promise(r=>setTimeout(r,200));
+  }
+  throw new Error('插件面板桥接未就绪，请在 AstrBot 控制台里打开');
+}
 const api = {
   async get(path, params) {
-    if (!bridge) throw new Error('插件面板桥接不可用，请在 AstrBot 控制台里打开');
+    const bridge = await getBridge();
     const res = await bridge.apiGet(path, params);
     return unwrap(res);
   },
   async post(path, body) {
-    if (!bridge) throw new Error('插件面板桥接不可用');
+    const bridge = await getBridge();
     const res = await bridge.apiPost(path, body);
     return unwrap(res);
   }
@@ -137,7 +144,7 @@ async function resetAll(){
   try{ await api.post('page/reset', {}); document.getElementById('msg').textContent='已重置'; load(); }
   catch(e){ document.getElementById('msg').textContent='失败：'+e.message; }
 }
-(async()=>{ try{ if(bridge && bridge.ready) await bridge.ready(); }catch(e){} await load(); setInterval(load, 30000); })();
+(async()=>{ await load(); setInterval(load, 30000); })();
 </script>
 </body>
 </html>

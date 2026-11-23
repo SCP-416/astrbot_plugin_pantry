@@ -75,6 +75,7 @@ _DEFAULT_ITEMS = [
 class PantryPlugin(Star):
     def __init__(self, context: Context, config: dict):
         super().__init__(context, config)
+        self._cfg = config or {}
         self.data_dir = str(StarTools.get_data_dir("astrbot_plugin_pantry"))
         os.makedirs(self.data_dir, exist_ok=True)
         self._state_path = os.path.join(self.data_dir, "pantry_state.json")
@@ -93,7 +94,7 @@ class PantryPlugin(Star):
                         return parsed
         except Exception:
             pass
-        return parse_items(self.config.get("items_json", "")) or list(_DEFAULT_ITEMS)
+        return parse_items(self._cfg.get("items_json", "")) or list(_DEFAULT_ITEMS)
 
     def _save_items(self, items):
         try:
@@ -106,7 +107,7 @@ class PantryPlugin(Star):
 
     def _threshold(self):
         try:
-            return float(self.config.get("low_threshold", 10) or 10)
+            return float(self._cfg.get("low_threshold", 10) or 10)
         except (TypeError, ValueError):
             return 10.0
 
@@ -229,7 +230,7 @@ class PantryPlugin(Star):
                 logger.info("[柴米油盐] 场景推进到：%s", node)
 
             # 采购完成 -> 补货
-            done_words = [w.strip() for w in str(self.config.get("done_words", "") or "").replace("，", ",").split(",") if w.strip()]
+            done_words = [w.strip() for w in str(self._cfg.get("done_words", "") or "").replace("，", ",").split(",") if w.strip()]
             if done_words and any(w in text for w in done_words) and st.get("pending"):
                 names = restock(st, items)
                 self._save_state(st)
@@ -238,7 +239,7 @@ class PantryPlugin(Star):
                     logger.info("[柴米油盐] 采购完成，补货：%s", names)
                 return
 
-            buy_words = [w.strip() for w in str(self.config.get("procurement_words", "") or "").replace("，", ",").split(",") if w.strip()]
+            buy_words = [w.strip() for w in str(self._cfg.get("procurement_words", "") or "").replace("，", ",").split(",") if w.strip()]
             if buy_words and any(w in text for w in buy_words) and st.get("pending"):
                 st["last_propose"] = time.time()
                 self._save_state(st)
@@ -252,7 +253,7 @@ class PantryPlugin(Star):
     # ---------- LLM 邀约 ----------
     async def _llm_proposal(self, st, umo):
         """按人设写一句采购邀约；失败退回模板。"""
-        if not self.config.get("llm_propose", True):
+        if not self._cfg.get("llm_propose", True):
             return ""
         pending = [str(x) for x in (st.get("pending") or [])[:4]]
         if not pending:
@@ -419,9 +420,9 @@ load();setInterval(load,30000);
         while True:
             try:
                 await asyncio.sleep(600)
-                if not self.config.get("auto_propose", True):
+                if not self._cfg.get("auto_propose", True):
                     continue
-                target = str(self.config.get("target_umo", "") or "").strip()
+                target = str(self._cfg.get("target_umo", "") or "").strip()
                 if not target:
                     continue
                 st = self._load_state()
@@ -429,7 +430,7 @@ load();setInterval(load,30000);
                 pending = [str(x) for x in (st.get("pending") or [])]
                 if not pending:
                     continue
-                cooldown = max(0.5, float(self.config.get("propose_cooldown_hours", 6) or 6)) * 3600
+                cooldown = max(0.5, float(self._cfg.get("propose_cooldown_hours", 6) or 6)) * 3600
                 if time.time() - float(st.get("last_propose") or 0) < cooldown:
                     continue
                 items = self._items()

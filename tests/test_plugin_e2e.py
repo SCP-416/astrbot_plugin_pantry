@@ -50,7 +50,7 @@ async def main():
     ctx = FakeContext()
     cfg = {"items_json": "", "llm_propose": False, "target_umo": ""}
     plugin = mod.PantryPlugin(ctx, cfg)
-    plugin.config = cfg  # 真实环境由 AstrBot 加载器注入
+    plugin._cfg = cfg  # 真实环境由 __init__ 保存传入的 config
     plugin.data_dir = tempfile.mkdtemp(prefix="pantry-test-")
     plugin._state_path = os.path.join(plugin.data_dir, "pantry_state.json")
 
