@@ -10,8 +10,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/SCP-416/astrbot_plugin_pantry/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license" /></a>
-  <a href="https://github.com/SCP-416/astrbot_plugin_pantry"><img src="https://img.shields.io/badge/version-0.1.0-green.svg" alt="version" /></a>
+  <a href="https://github.com/ANOPEX/astrbot_plugin_pantry/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="license" /></a>
+  <a href="https://github.com/ANOPEX/astrbot_plugin_pantry"><img src="https://img.shields.io/badge/version-0.1.0-green.svg" alt="version" /></a>
   <a href="https://docs.astrbot.app"><img src="https://img.shields.io/badge/AstrBot-%3E%3D4.17.0-orange.svg" alt="AstrBot" /></a>
   <img src="https://img.shields.io/badge/Python-3.11%2B-yellow.svg" alt="Python" />
 </p>
